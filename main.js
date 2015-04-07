@@ -1,6 +1,9 @@
 var canvas = document.getElementById("gameCanvas");
 var context = canvas.getContext("2d");
 
+var player = new Player();
+var keyboard = new Keyboard();
+
 var startFrameMillis = Date.now();
 var endFrameMillis = Date.now();
 
@@ -32,7 +35,6 @@ function getDeltaTime()
 var SCREEN_WIDTH = canvas.width;
 var SCREEN_HEIGHT = canvas.height;
 
-
 // some variables to calculate the Frames Per Second (FPS - this tells use
 // how fast our game is running, and allows us to make the game run at a 
 // constant speed)
@@ -47,9 +49,9 @@ function run()
 	
 	var deltaTime = getDeltaTime();
 	
-	context.drawImage(chuckNorris, SCREEN_WIDTH/2 - chuckNorris.width/2, SCREEN_HEIGHT/2 - chuckNorris.height/2);
-	
-		
+	player.update(deltaTime);
+	player.draw();
+			
 	// update the frame counter 
 	fpsTime += deltaTime;
 	fpsCount++;
@@ -66,9 +68,7 @@ function run()
 	context.fillText("FPS: " + fps, 5, 20, 100);
 }
 
-
-//-------------------- Don't modify anything below here
-
+//------------------------------------------------------------- Don't modify anything below here ------------------------------------------------------------------------
 
 // This code will set up the framework so that the 'run' function is called 60 times per second.
 // We have a some options to fall back on in case the browser doesn't support our preferred method.

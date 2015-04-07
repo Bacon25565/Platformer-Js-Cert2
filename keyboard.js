@@ -4,8 +4,8 @@ var Keyboard = function()
 	var self = this;
 	
 	//These set it up so that our own onKeyDown function get called when keys are pressed and released
-	window.addEventListener('keydown', funtion(evt) {self.onKeyDown(evt);}, false);
-	window.addEventListener('keyup', funtion(evt) {self.onKeyUp(evt);}, false);
+	window.addEventListener('keydown', function(evt) {self.onKeyDown(evt);}, false);
+	window.addEventListener('keyup', function(evt) {self.onKeyUp(evt);}, false);
 	
 	this.keys = new Array();
 	//Key constants. Go here for a list of key codes: https://developer.mozilla.org/en-US/docs/DOM/KeyboardEvent
