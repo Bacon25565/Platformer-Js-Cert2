@@ -1,3 +1,6 @@
+var canvas = document.getElementById("gameCanvas");
+var context = canvas.getContext("2d");
+
 var startFrameMillis = Date.now();
 var endFrameMillis = Date.now();
 
@@ -37,14 +40,10 @@ var fps = 0;
 var fpsCount = 0;
 var fpsTime = 0;
 
-// load an image to draw
-var chuckNorris = document.createElement("img");
-chuckNorris.src = "hero.png";
-
 function run()
 {
-	player.update(deltaTime);
-	player.draw();
+	context.fillStyle = "#ccc";		
+	context.fillRect(0, 0, canvas.width, canvas.height);
 	
 	var deltaTime = getDeltaTime();
 	

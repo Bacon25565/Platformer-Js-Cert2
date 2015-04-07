@@ -1,4 +1,5 @@
-varPlayer = function() {
+var Player = function() 
+{
 	this.image= document.createElement("img");
 	this.x= canvas.width/2;
 	this.y= canvas.height/2;
@@ -11,7 +12,7 @@ varPlayer = function() {
 	this.image.src= "hero.png";
 };
 
-varplayer = newPlayer();
+var player = newPlayer();
 
 Player.prototype.update = function(deltaTime)
 {
