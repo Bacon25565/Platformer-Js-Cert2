@@ -56,7 +56,7 @@ function run()
 	var deltaTime = getDeltaTime();
 	
 	player.update(deltaTime);
-	player.draw();
+	player.draw(player, this.x, this.y);
 			
 	// update the frame counter 
 	fpsTime += deltaTime;
@@ -70,7 +70,7 @@ function run()
 		
 	// draw the FPS
 	context.fillStyle = "#f00";
-	context.font="14px Arial";
+	context.font="18px Calabri";
 	context.fillText("FPS: " + fps, 5, 20, 100);
 }
 

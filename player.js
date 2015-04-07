@@ -11,6 +11,7 @@ var Player = function()
 	
 	this.velocityX = 0;
 	this.velocityY = 0;
+	this.speed = 5;
 	
 	this.angularVelocity = 0;
 	
