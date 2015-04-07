@@ -4,6 +4,9 @@ var context = canvas.getContext("2d");
 var player = new Player();
 var keyboard = new Keyboard();
 
+var background = document.createElement("img");
+background.src = "background.png";
+
 var startFrameMillis = Date.now();
 var endFrameMillis = Date.now();
 
@@ -46,6 +49,9 @@ function run()
 {
 	context.fillStyle = "#ccc";		
 	context.fillRect(0, 0, canvas.width, canvas.height);
+	
+	canvas.width = canvas.width;
+	context.drawImage(background, 0, 0);
 	
 	var deltaTime = getDeltaTime();
 	

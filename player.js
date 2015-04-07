@@ -20,7 +20,15 @@ var Player = function()
 
 Player.prototype.update = function(deltaTime)
 {
-	this.rotation += deltaTime;
+	if(keyboard.isKeyDown(keyboard.KEY_SPACE))
+	{
+		this.rotation += deltaTime;
+	}
+	else
+	{
+		this.rotation -= deltaTime;
+	}
+	
 }
 
 Player.prototype.draw = function()
