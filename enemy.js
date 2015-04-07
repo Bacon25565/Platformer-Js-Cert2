@@ -4,7 +4,7 @@ var Enemy = function()
 	this.image.src = "enemy.png";
 	
 	this.xPos = canvas.width/2;
-	this.yPos = canvas.height/2;
+	this.yPos = canvas.heighty/2;
 	
 	this.width = 62.83;
 	this.height = 50.67;
@@ -34,9 +34,8 @@ Enemy.prototype.update = function(deltaTime)
 	{
 		this.rotation += deltaTime;
 	}
-	else
+	else if (keyboard.isKeyDown(keyboard.KEY_SHIFT))
 	{
 		this.rotation -= deltaTime;
 	}
-	
 }

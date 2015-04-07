@@ -4,6 +4,7 @@ var context = canvas.getContext("2d");
 var player = new Player();
 var keyboard = new Keyboard();
 var enemy = new Enemy();
+var bullet = new Bullet();
 
 var background = document.createElement("img");
 background.src = "background.png";
@@ -61,6 +62,12 @@ function run()
 	
 	enemy.update(deltaTime);
 	enemy.draw(enemy, this.x, this.y);
+	
+	if(player.shoot == true)
+	{
+		bullet.update(deltaTime);
+		bullet.draw(bullet, player.x, player.y);
+	}
 	
 	// update the frame counter 
 	fpsTime += deltaTime;
