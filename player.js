@@ -3,14 +3,13 @@ var Player = function()
 	this.image = document.createElement("img");
 	this.image.src = "hero.png";
 	
-	this.x = canvas.width/2;
-	this.y = canvas.height/2;
+	this.position = new Vector2();
+	this.position.set(canvas.width/2, canvas.height/2);
 	
 	this.width = 159;
 	this.height = 163;
 	
-	this.velocityX = 0;
-	this.velocityY = 0;
+	this.velocity = new Vector2();
 	this.speed = 5;
 	
 	this.dirX = 0;
@@ -29,38 +28,54 @@ Player.prototype.update = function(deltaTime)
 	if(keyboard.isKeyDown(keyboard.KEY_SPACE))
 	{
 		this.shoot = true;
-		this.rotation += deltaTime;
 	} 
-	else if (keyboard.isKeyDown(keyboard.KEY_SHIFT))
+
+	var acceleration = new Vector2();
+	var playerAccel = 5000;
+	var playerDrag = 11;
+	var playerGravity =0;// TILE * 9.8 * 3;
+	
+	acceleration.y = playerGravity;
+	
+	if(keyboard.isKeyDown(keyboard.KEY_A))
 	{
-		this.rotation -= deltaTime;
+		acceleration.xPos -= playerAccel;
 	}
-	if (keyboard.isKeyDown(keyboard.KEY_W))
+	if(keyboard.isKeyDown(keyboard.KEY_D))
 	{
-		player.dirY = 1;
-		player.isMoving = true;
+		acceleration.xPos += playerAccel;
 	}
-	if (event.keyCode === keyRight || event.keyCode === keyD)
+	if(keyboard.isKeyDown(keyboard.KEY_W))
 	{
-		player.angularVelocity = player.turnSpeed;
-		player.left = true;
+		acceleration.yPos -= playerAccel;
 	}
-	if (event.keyCode === keyDown || event.keyCode === keyS)
+	if(keyboard.isKeyDown(keyboard.KEY_S))
 	{
-		player.dirY = -0.55;
-		player.isMoving = false;
+		acceleration.yPos += playerAccel;
 	}
-	if (event.keyCode === keyLeft || event.keyCode === keyA)
-	{
-		player.angularVelocity = -player.turnSpeed;
-		player.right = true;
-	}
+	
+	//acceleration = acceleration.subtract(this.velocity.multiplyScalar(playerDrag));
+	//this.velocity.multiplyScalar(deltaTime)
+
+	var v_delta = acceleration.multiplyScalar(deltaTime);
+	this.velocity = this.velocity.add(v_delta.xPos, v_delta.yPos);
+	
+	var p_delta = this.velocity.multiplyScalar(deltaTime);
+	this.position = this.position.add(p_delta.xPos, p_delta.yPos);
+	
+	var tx = pixelToTile(this.position.xPos);
+	var ty = pixelToTile(this.position.yPos);
+	
+	var cell = cellAtTileCoord(LAYER_PLATFORMS, tx, ty);
+	var cell_right = cellAtTileCoord(LAYER_PLATFORMS, tx + 1, ty);
+	var cell_down = cellAtTileCoord(LAYER_PLATFORMS, tx, ty + 1);
+	var cell_diag = cellAtTileCoord(LAYER_PLATFORMS, tx + 1, ty + 1);
 }
 
 Player.prototype.draw = function()
 {
 	context.save();
-		context.translate(this.x, this.y);
+		context.translate(this.position.xPos, this.position.yPos);
 		context.rotate(this.rotation);
 		context.drawImage(this.image, -this.width/2, -this.height/2);
 	context.restore();
