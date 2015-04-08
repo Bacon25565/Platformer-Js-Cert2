@@ -31,9 +31,9 @@ Player.prototype.update = function(deltaTime)
 	} 
 
 	var acceleration = new Vector2();
-	var playerAccel = 5000;
+	var playerAccel = 2000;
 	var playerDrag = 11;
-	var playerGravity =0;// TILE * 9.8 * 3;
+	var playerGravity = TILE * 9.8 * 3;
 	
 	acceleration.y = playerGravity;
 	
@@ -54,8 +54,9 @@ Player.prototype.update = function(deltaTime)
 		acceleration.yPos += playerAccel;
 	}
 	
-	//acceleration = acceleration.subtract(this.velocity.multiplyScalar(playerDrag));
-	//this.velocity.multiplyScalar(deltaTime)
+	//var dragVector = this.velocity.multiplyScalar(playerDrag);
+	//dragVector.y = 0;
+	//acceleration = acceleration.subtract(dragVector);
 
 	var v_delta = acceleration.multiplyScalar(deltaTime);
 	this.velocity = this.velocity.add(v_delta.xPos, v_delta.yPos);
@@ -66,10 +67,55 @@ Player.prototype.update = function(deltaTime)
 	var tx = pixelToTile(this.position.xPos);
 	var ty = pixelToTile(this.position.yPos);
 	
+	var nx = this.position.xPos % TILE;
+	var ny = this.position.yPos % TILE;
+	
 	var cell = cellAtTileCoord(LAYER_PLATFORMS, tx, ty);
 	var cell_right = cellAtTileCoord(LAYER_PLATFORMS, tx + 1, ty);
 	var cell_down = cellAtTileCoord(LAYER_PLATFORMS, tx, ty + 1);
 	var cell_diag = cellAtTileCoord(LAYER_PLATFORMS, tx + 1, ty + 1);
+	
+	//actual collision
+	if(this.velocity.yPos > 0)//moving down
+	{
+		if( (cell_down && !cell) || (cell_diag && !cell_right && nx))
+		{
+			this.position.yPos = tileToPixel(ty);
+			this.velocity.yPos = 0;
+			ny = 0;
+		}
+	}
+	else if(this.velocity.yPos < 0)//moving up
+	{
+		if(cell && !cell_down || (cell_right && !cell_diag && nx))
+		{
+			this.position.yPos = tileToPixel(ty + 1);
+			this.velocity.yPos = 0;
+			
+			cell = cell_down;
+			cell_right = cell_diag;
+			cell_down = cellAtTileCoord(LAYER_PLATFORMS, tx, ty + 2);
+			cell_diag = cellAtTileCoord(LAYER_PLATFORMS, tx + 1, ty + 2);
+			
+			ny = 0;
+		}
+	}
+	if(this.velocity.xPos > 0)//if we are moving right
+	{
+		if(cell_right && !cell || (cell_diag && !cell_down && ny))
+		{
+			this.position.xPos = tileToPixel(tx);
+			this.velocity.xPos = 0;
+		}
+	}
+	else if(this.velocity.xPos <0)//if we are moving left
+	{
+		if(cell && !cell_right || (cell_down && !cell_diag && ny))
+		{
+			this.position.xPos = tileToPixel(tx + 1);
+			this.velocity.xPos = 0;
+		}
+	}
 }
 
 Player.prototype.draw = function()

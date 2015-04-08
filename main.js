@@ -101,7 +101,7 @@ function intCollision()
 
 function tileToPixel(tile_coord)
 {
-	return tile_soord * TILE;
+	return tile_coord * TILE;
 }
 
 function pixelToTile(pixel)
@@ -178,8 +178,8 @@ function run()
 	player.update(deltaTime);
 	player.draw(player, this.x, this.y);
 	
-	enemy.update(deltaTime);
-	enemy.draw(enemy, canvas.width/2, canvas.height/2);
+	//enemy.update(deltaTime);
+	//enemy.draw(enemy, canvas.width/2, canvas.height/2);
 	
 	if(player.shoot == true)
 	{
