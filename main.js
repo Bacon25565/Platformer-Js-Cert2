@@ -176,6 +176,13 @@ function run()
 	drawMap();
 	context.fillStyle = "#000000";		
 	
+	//ladder detection
+	if((player.position.xPos >= 280 && player.position.xPos <= 280 + 70) && (player.position.yPos >= 560 && player.position.yPos <= 560 + 425))
+	{
+		context.strokeRect(280, 560, 70, 425);
+	}
+	
+	//door detection
 	if((player.position.xPos >= canvas.width / 2 + 715 && player.position.xPos <= canvas.width / 2 + 715 + 70) && (player.position.yPos >= 28 && player.position.yPos <= 28 + 110))
 	{
 		context.strokeRect(canvas.width / 2 + 715, 28, 70, 110);

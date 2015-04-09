@@ -55,11 +55,13 @@ Player.prototype.update = function(deltaTime)
 	
 	var acceleration = new Vector2();
 	var playerAccel = 5000;
-	var playerDrag = 5;
+	var playerDrag = 8;
 	var playerGravity = TILE * 9.8 * 6;
 	var jumpForce = 65000;
 	
 	acceleration.yPos = playerGravity;
+	
+	var currFrame = this.sprite.currentFrame;
 	
 	if(keyboard.isKeyDown(keyboard.KEY_A) == true )
 	{
@@ -164,18 +166,49 @@ Player.prototype.update = function(deltaTime)
 	var v_delta = acceleration.multiplyScalar(deltaTime);
 	this.velocity = this.velocity.add(v_delta.xPos, v_delta.yPos);
 	
-	var p_delta = this.velocity.multiplyScalar(deltaTime);
-	this.position = this.position.add(p_delta.xPos, p_delta.yPos);
-	
 	var collOffset = new Vector2();
 	collOffset.set(-TILE/2, 40);//this.height/2 - TILE);
-	
 	var collPos = this.position.add(collOffset.xPos, collOffset.yPos);
-	
+		
 	var tx = pixelToTile(collPos.xPos);
 	var ty = pixelToTile(collPos.yPos);
 	var nx = collPos.xPos % TILE;
 	var ny = collPos.yPos % TILE;
+	
+	
+	if ( cellAtTileCoord(LAYER_LADDERS, tx, ty) ||
+		(cellAtTileCoord(LAYER_LADDERS, tx+1, ty) && nx) ||
+		(cellAtTileCoord(LAYER_LADDERS, tx, ty+1) && ny))
+	{
+		if(this.sprite.currentAnimation != ANIM_CLIMB)
+		{
+			this.sprite.setAnimation(ANIM_CLIMB);
+			this.sprite.currentFrame = currFrame;
+		}		
+		if(keyboard.isKeyDown(keyboard.KEY_W))
+		{
+			this.velocity.yPos = -600;
+		}
+		else if(keyboard.isKeyDown(keyboard.KEY_S))
+		{
+			this.velocity.yPos = 600;
+		}
+		else
+		{
+			this.velocity.yPos = 0;
+		}
+	}
+	
+	
+	
+	var p_delta = this.velocity.multiplyScalar(deltaTime);
+	this.position = this.position.add(p_delta.xPos, p_delta.yPos);
+	
+	collPos = this.position.add(collOffset.xPos, collOffset.yPos);
+	tx = pixelToTile(collPos.xPos);
+	ty = pixelToTile(collPos.yPos);
+	nx = collPos.xPos % TILE;
+	ny = collPos.yPos % TILE;
 	
 	var cell = cellAtTileCoord(LAYER_PLATFORMS, tx, ty);
 	var cell_right = cellAtTileCoord(LAYER_PLATFORMS, tx + 1, ty);
