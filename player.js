@@ -73,11 +73,6 @@ Player.prototype.update = function(deltaTime)
 			this.sprite.setAnimation(ANIM_WALK_LEFT);
 		}
 	}
-	else if(keyboard.isKeyDown(keyboard.KEY_E) == true)
-	{
-		if(this.sprite.currentAnimation != ANIM_CLIMB)
-				this.sprite.setAnimation(ANIM_CLIMB);
-	}
 	else if(keyboard.isKeyDown(keyboard.KEY_SPACE) == true)
 	{
 		if(this.direction == LEFT)
