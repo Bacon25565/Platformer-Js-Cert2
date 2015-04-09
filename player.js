@@ -6,8 +6,8 @@ var Player = function()
 	this.position = new Vector2();
 	this.position.set(canvas.width/2, canvas.height/2);
 	
-	this.width = 159;
-	this.height = 163;
+	this.width = 165;
+	this.height = 100;
 	
 	this.velocity = new Vector2();
 	this.speed = 5;
@@ -64,11 +64,15 @@ Player.prototype.update = function(deltaTime)
 	var p_delta = this.velocity.multiplyScalar(deltaTime);
 	this.position = this.position.add(p_delta.xPos, p_delta.yPos);
 	
-	var tx = pixelToTile(this.position.xPos);
-	var ty = pixelToTile(this.position.yPos);
+	var collOffset = new Vector2();
+	collOffset.set(-TILE/2, 40);//this.height/2 - TILE);
 	
-	var nx = this.position.xPos % TILE;
-	var ny = this.position.yPos % TILE;
+	var collPos = this.position.add(collOffset.xPos, collOffset.yPos);
+	
+	var tx = pixelToTile(collPos.xPos);
+	var ty = pixelToTile(collPos.yPos);
+	var nx = collPos.xPos % TILE;
+	var ny = collPos.yPos % TILE;
 	
 	var cell = cellAtTileCoord(LAYER_PLATFORMS, tx, ty);
 	var cell_right = cellAtTileCoord(LAYER_PLATFORMS, tx + 1, ty);
@@ -80,7 +84,7 @@ Player.prototype.update = function(deltaTime)
 	{
 		if( (cell_down && !cell) || (cell_diag && !cell_right && nx))
 		{
-			this.position.yPos = tileToPixel(ty);
+			this.position.yPos = tileToPixel(ty) - collOffset.yPos;
 			this.velocity.yPos = 0;
 			this.jumping = false;
 			ny = 0;
@@ -90,7 +94,7 @@ Player.prototype.update = function(deltaTime)
 	{
 		if((cell && !cell_down) || (cell_right && !cell_diag && nx))
 		{
-			this.position.yPos = tileToPixel(ty + 1);
+			this.position.yPos = tileToPixel(ty + 1) - collOffset.yPos;
 			this.velocity.yPos = 0;
 			
 			cell = cell_down;
@@ -105,7 +109,7 @@ Player.prototype.update = function(deltaTime)
 	{
 		if((cell_right && !cell) || (cell_diag && !cell_down && ny))
 		{
-			this.position.xPos = tileToPixel(tx);
+			this.position.xPos = tileToPixel(tx) - collOffset.xPos;
 			this.velocity.xPos = 0;
 		}
 	}
@@ -113,7 +117,7 @@ Player.prototype.update = function(deltaTime)
 	{
 		if((cell && !cell_right) || (cell_down && !cell_diag && ny))
 		{
-			this.position.xPos = tileToPixel(tx + 1);
+			this.position.xPos = tileToPixel(tx + 1) - collOffset.xPos;
 			this.velocity.xPos = 0;
 		}
 	}

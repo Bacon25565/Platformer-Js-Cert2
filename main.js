@@ -169,6 +169,10 @@ function drawMap()
 function run()
 {
 	var deltaTime = getDeltaTime();
+	if(deltaTime > 0.03)
+	{
+		deltaTime = 0.03;
+	}
 	
 	context.fillStyle = "#ccc";		
 	context.fillRect(0, 0, canvas.width, canvas.height);
