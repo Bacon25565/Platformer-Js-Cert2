@@ -3,8 +3,8 @@ var Bullet = function()
 	this.image = document.createElement("img");
 	this.image.src = "plasmabullet.png"
 	
-	this.xPos = player.x;
-	this.yPos = player.y;
+	this.xPos = player.xPos;
+	this.yPos = player.yPos;
 	this.rotation = player.rotation;
 	
 	this.width = 65;
@@ -13,6 +13,8 @@ var Bullet = function()
 	this.velocityX = 0;
 	this.velocityY = 0;
 	this.speed = 5;
+	
+	this.isDead = true;
 }
 
 Bullet.prototype.draw = function()

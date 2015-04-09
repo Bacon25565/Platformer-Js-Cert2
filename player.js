@@ -47,6 +47,9 @@ var Player = function()
 	
 	this.jumping = false;
 	this.falling = false;
+	
+	this.score = 0;
+	this.lives = 5;
 };
 
 Player.prototype.update = function(deltaTime)
@@ -163,6 +166,7 @@ Player.prototype.update = function(deltaTime)
 	
 	var collOffset = new Vector2();
 	collOffset.set(-TILE/2, 40);//this.height/2 - TILE);
+	
 	var collPos = this.position.add(collOffset.xPos, collOffset.yPos);
 		
 	var tx = pixelToTile(collPos.xPos);

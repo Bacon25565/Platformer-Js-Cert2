@@ -198,10 +198,24 @@ function run()
 		fpsCount = 0;
 	}		
 		
-	// draw the FPS
+	//draw the FPS
 	context.fillStyle = "#000000";
 	context.font="18px Calabri";
-	context.fillText("FPS: " + fps, 5, 22, 100);
+	context.fillText("FPS: " + fps, 10, 22, 100);
+	
+	//draw the score
+	context.fillStyle = "black";
+	context.font = "18px Calabri";
+	var scoreText = "Score: " + player.score;
+	context.fillText(scoreText, 10, 44, 100);
+	
+	//draw the lives
+	for(var i = 0; i < player.lives; i++)
+	{
+		var heart = document.createElement("img");
+		heart.src = "Heart.png";
+		context.drawImage(heart, 10 + ((heart.height + 2) * i), 50);
+	}
 }
 
 intCollision();
