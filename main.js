@@ -4,7 +4,6 @@ var context = canvas.getContext("2d");
 var player = new Player();
 var keyboard = new Keyboard();
 var enemy = new Enemy();
-var bullet = new Bullet();
 
 var startFrameMillis = Date.now();
 var endFrameMillis = Date.now();
@@ -174,10 +173,13 @@ function run()
 		deltaTime = 0.03;
 	}
 	
-	context.fillStyle = "#ccc";		
-	context.fillRect(0, 0, canvas.width, canvas.height);
-	
 	drawMap();
+	context.fillStyle = "#000000";		
+	
+	if((player.position.xPos >= canvas.width / 2 + 715 && player.position.xPos <= canvas.width / 2 + 715 + 70) && (player.position.yPos >= 28 && player.position.yPos <= 28 + 110))
+	{
+		context.strokeRect(canvas.width / 2 + 715, 28, 70, 110);
+	}
 	
 	player.update(deltaTime);
 	player.draw(player, this.x, this.y);
@@ -198,7 +200,7 @@ function run()
 	// draw the FPS
 	context.fillStyle = "#000000";
 	context.font="18px Calabri";
-	context.fillText("FPS: " + fps, 5, 20, 100);
+	context.fillText("FPS: " + fps, 5, 22, 100);
 }
 
 intCollision();

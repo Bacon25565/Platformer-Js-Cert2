@@ -136,15 +136,8 @@ Sprite.prototype.draw = function(c, x, y) {
 			this.animations[this.currentAnimation][this.currentFrame].y,
 			this.animations[this.currentAnimation][this.currentFrame].width,
 			this.animations[this.currentAnimation][this.currentFrame].height,
-			x+this.offsets[this.currentAnimation].x, y+this.offsets[this.currentAnimation].y,
+			x+this.offsets[this.currentAnimation].xPos, y+this.offsets[this.currentAnimation].yPos,
 			this.animations[this.currentAnimation][this.currentFrame].width,
 			this.animations[this.currentAnimation][this.currentFrame].height);
 };
-
-
-
-
-
-
-
 
