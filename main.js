@@ -181,12 +181,6 @@ function run()
 	//enemy.update(deltaTime);
 	//enemy.draw(enemy, canvas.width/2, canvas.height/2);
 	
-	if(player.shoot == true)
-	{
-		bullet.update(deltaTime);
-		bullet.draw(bullet, player.x, player.y);
-	}
-	
 	// update the frame counter 
 	fpsTime += deltaTime;
 	fpsCount++;

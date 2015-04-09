@@ -18,24 +18,19 @@ var Player = function()
 	
 	this.rotation = 0;
 	
-	this.isMoving = false;
-	this.shoot = false;
-	
+	this.jumping = false;
+	this.falling = false;
 };
 
 Player.prototype.update = function(deltaTime)
 {
-	if(keyboard.isKeyDown(keyboard.KEY_SPACE))
-	{
-		this.shoot = true;
-	} 
-
 	var acceleration = new Vector2();
-	var playerAccel = 2000;
-	var playerDrag = 11;
-	var playerGravity = TILE * 9.8 * 3;
+	var playerAccel = 5000;
+	var playerDrag = 5;
+	var playerGravity = TILE * 9.8 * 6;
+	var jumpForce = 65000;
 	
-	acceleration.y = playerGravity;
+	acceleration.yPos = playerGravity;
 	
 	if(keyboard.isKeyDown(keyboard.KEY_A))
 	{
@@ -45,18 +40,23 @@ Player.prototype.update = function(deltaTime)
 	{
 		acceleration.xPos += playerAccel;
 	}
-	if(keyboard.isKeyDown(keyboard.KEY_W))
+	if(this.velocity.yPos > 0)
 	{
-		acceleration.yPos -= playerAccel;
+		this.falling = true;
 	}
-	if(keyboard.isKeyDown(keyboard.KEY_S))
+	else 
 	{
-		acceleration.yPos += playerAccel;
+		this.falling = false;
+	}
+	if(keyboard.isKeyDown(keyboard.KEY_SPACE) && !this.jumping && !this.falling)
+	{
+		acceleration.yPos -= jumpForce;
+		this.jumping = true;
 	}
 	
-	//var dragVector = this.velocity.multiplyScalar(playerDrag);
-	//dragVector.y = 0;
-	//acceleration = acceleration.subtract(dragVector);
+	var dragVector = this.velocity.multiplyScalar(playerDrag);
+	dragVector.yPos = 0;
+	acceleration = acceleration.subtract(dragVector.xPos, dragVector.yPos);
 
 	var v_delta = acceleration.multiplyScalar(deltaTime);
 	this.velocity = this.velocity.add(v_delta.xPos, v_delta.yPos);
@@ -82,12 +82,13 @@ Player.prototype.update = function(deltaTime)
 		{
 			this.position.yPos = tileToPixel(ty);
 			this.velocity.yPos = 0;
+			this.jumping = false;
 			ny = 0;
 		}
 	}
 	else if(this.velocity.yPos < 0)//moving up
 	{
-		if(cell && !cell_down || (cell_right && !cell_diag && nx))
+		if((cell && !cell_down) || (cell_right && !cell_diag && nx))
 		{
 			this.position.yPos = tileToPixel(ty + 1);
 			this.velocity.yPos = 0;
@@ -102,7 +103,7 @@ Player.prototype.update = function(deltaTime)
 	}
 	if(this.velocity.xPos > 0)//if we are moving right
 	{
-		if(cell_right && !cell || (cell_diag && !cell_down && ny))
+		if((cell_right && !cell) || (cell_diag && !cell_down && ny))
 		{
 			this.position.xPos = tileToPixel(tx);
 			this.velocity.xPos = 0;
@@ -110,7 +111,7 @@ Player.prototype.update = function(deltaTime)
 	}
 	else if(this.velocity.xPos <0)//if we are moving left
 	{
-		if(cell && !cell_right || (cell_down && !cell_diag && ny))
+		if((cell && !cell_right) || (cell_down && !cell_diag && ny))
 		{
 			this.position.xPos = tileToPixel(tx + 1);
 			this.velocity.xPos = 0;
