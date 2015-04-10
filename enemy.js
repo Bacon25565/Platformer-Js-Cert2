@@ -7,6 +7,8 @@ var Enemy = function()
 	this.height = 50.67;
 	
 	this.position = new Vector2();
+	
+	this.position.set(1000, 1625);
 	this.velocity = new Vector2();
 	
 	
@@ -16,7 +18,7 @@ var Enemy = function()
 Enemy.prototype.update = function(deltaTime)
 {
 	var acceleration = new Vector2();
-	var enemyAccel = 4000;
+	var enemyAccel = 2000;
 	var enemyDrag = 10;
 	
 	if(this.direction == RIGHT)
@@ -58,24 +60,24 @@ Enemy.prototype.update = function(deltaTime)
 	{
 		if(!cell && (cell_right && nx))
 		{
-			this.direction = left;
+			this.direction = LEFT;
 		}
 		if(cell_down && (!cell_diag && nx))
 		{
-			this.direction = left;
+			this.direction = LEFT;
 		}
 	}
 	else
 	{
 		if(cell && (!cell_right && nx))
 		{
-			this.direction = right;
+			this.direction = RIGHT;
 		}
 		else
 		{
 			if(!cell_down && (cell_diag && nx))
 			{
-				this.direction = right;
+				this.direction = RIGHT;
 			}
 		}
 	}
@@ -83,5 +85,5 @@ Enemy.prototype.update = function(deltaTime)
 
 Enemy.prototype.draw = function(offSetX, offSetY)
 {
-		context.drawImage(this.image, 1000 - offSetX, 1625 - offSetY, this.width, this.height)
+		context.drawImage(this.image, this.position.xPos - offSetX, this.position.yPos - offSetY, this.width, this.height)
 }
