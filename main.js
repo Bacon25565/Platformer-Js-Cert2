@@ -1,16 +1,13 @@
 var canvas = document.getElementById("gameCanvas");
 var context = canvas.getContext("2d");
 
-var player = new Player();
-var keyboard = new Keyboard();
-var enemy = new Enemy();
 
-var playerX = player.xPos;
-var playerY = player.yPos;
-var playerRot = player.rotation;
 
 var startFrameMillis = Date.now();
 var endFrameMillis = Date.now();
+
+var background = document.createElement("img");
+background.src = "background.png";
 
 // This function will return the time in seconds since the function 
 // was last called
@@ -65,6 +62,14 @@ var LAYER_ADDINS = 3;
 
 var tileset = document.createElement("img");
 tileset.src = "tileset.png";
+
+var player = new Player();
+var keyboard = new Keyboard();
+var enemy = new Enemy();
+
+var playerX = player.xPos;
+var playerY = player.yPos;
+var playerRot = player.rotation;
 
 var cells = [];
 
@@ -171,16 +176,70 @@ function drawMap(offSetX, offSetY)
 	}
 }
 
+var bgMusic = new Howl(
+	{
+		urls:["background.ogg"], 
+		loop: true, 
+		buffer: true, 
+		volume: 0.5
+	});
+bgMusic.play();
+	
+var stateSplash = 0;
+var stateGame = 1;
+var gameState = stateSplash;
+
 function run()
 {
 	var deltaTime = getDeltaTime();
+	switch(gameState)
+	{
+		case stateSplash:
+		splashStateUpdate(deltaTime);
+		break;
+		
+		case stateGame:
+		gameStateUpdate(deltaTime);
+		break;
+	}
+}
+
+function splashStateUpdate(deltaTime)
+{
+	//resets background image by clearing previous one
+	canvas.width = canvas.width;
+	context.drawImage(background, 0 ,0);
+	
+	if(keyboard.isKeyDown(keyboard.KEY_SPACE) == true)
+	{
+		gameState = stateGame;
+	}
+	
+	//draw the win game text
+	context.fillStyle = "white";
+	context.font = "100px Cooper Black";
+	var startText = "Chucky Kills The Bunny";
+	var center = context.measureText(startText);
+	context.fillText(startText, canvas.width / 2 - center.width / 2, canvas.height / 2);
+	
+	context.fillStyle = "white";
+	context.font = "50px Cooper Black";
+	var startText = "Press 'Space' To Play";
+	var center = context.measureText(startText);
+	context.fillText(startText, canvas.width / 2 - center.width / 2, canvas.height / 2 + 100);
+}
+
+function gameStateUpdate(deltaTime)
+{
 	if(deltaTime > 0.03)
 	{
 		deltaTime = 0.03;
 	}
 	
-	var xScroll = 0;
-	var yScroll = 0;
+	
+	
+	var xScroll = player.position.xPos -  canvas.width/2;
+	var yScroll = player.position.yPos - canvas.height/2;
 	
 	if(xScroll < 0)
 	{
@@ -188,7 +247,7 @@ function run()
 	}
 	if(xScroll > MAP.tw * TILE - canvas.width)
 	{
-		xScroll = MAP.tw * TILE - cnavas.width;
+		xScroll = MAP.tw * TILE - canvas.width;
 	}
 	if(yScroll < 0)
 	{
@@ -196,34 +255,62 @@ function run()
 	}
 	if(yScroll > MAP.th * TILE - canvas.height)
 	{
-		yScroll = MAP.th * TILE - cnavas.height;
+		yScroll = MAP.th * TILE - canvas.height;
 	}
 	
 	drawMap(xScroll, yScroll);
 	context.fillStyle = "#000000";		
 	
+		context.save();
+		context.fillStyle = "black";
+		context.fillRect(0, 0, 260, 180);
+	
+	if(player.win == true)
+	{
+		deathTimer += deltaTime;
+		
+		if (deathTimer > 6 )
+		{
+			deathTimer = 0;
+			player.lives = 5;
+			player.position.set(player.startPos.xPos, player.startPos.yPos);
+			player.score = player.score - 10;
+			player.win = false;
+		}
+		
+	}
+	
 	//door detection
 	if((player.position.xPos >= canvas.width / 2 + 615 && player.position.xPos <= canvas.width / 2 + 715 + 70) && (player.position.yPos >= 28 && player.position.yPos <= 28 + 110))
 	{
-		context.strokeRect(canvas.width / 2 + 615, 28, 70, 110);
-		
 		player.win = true;
 		
 		//draw the win game text
 		context.fillStyle = "black";
 		context.font = "100px Cooper Black";
 		var winText = "You Win!";
-		var winTextSize = 160;
-		context.fillText(winText, canvas.width / 2 - winTextSize, canvas.height / 2);
+		var center = context.measureText(winText);
+		context.fillText(winText, canvas.width / 2 - center.width / 2, canvas.height / 2);
+		
+		context.fillStyle = "black";
+		context.font = "50px Cooper Black";
+		var scoreText = "Your Score Was: " + player.score;
+		var center = context.measureText(scoreText);
+		context.fillText(scoreText, canvas.width / 2 - center.width / 2, canvas.height / 2 + 100);
+		
+		context.fillStyle = "black";
+		context.font = "50px Cooper Black";
+		var endText = "Respawn in - " + Math.floor(7 - deathTimer);
+		var center = context.measureText(endText);
+		context.fillText(endText, canvas.width / 2 - center.width / 2, canvas.height / 2 + 150);
 	}
 	
 
 	player.update(deltaTime);
-	
 	player.draw(xScroll, yScroll);
 	
-	//enemy.update(deltaTime);
-	//enemy.draw(enemy, canvas.width/2, canvas.height/2);
+	enemy.update(deltaTime);
+	enemy.draw(xScroll, yScroll);
 	
 	// update the frame counter 
 	fpsTime += deltaTime;
@@ -235,11 +322,6 @@ function run()
 		fpsCount = 0;
 	}		
 	
-	/*context.save();
-		context.strokeRect(0, 0, 180, 120);
-	context.return();*/
-	
-
 	if(player.lives <= 0)
 	{
 		player.isDead = true;
@@ -249,7 +331,7 @@ function run()
 		{
 			deathTimer = 0;
 			player.lives = 5;
-			player.position.set(canvas.width/2, canvas.height/2-500);
+			player.position.set(player.startPos.xPos, player.startPos.yPos);
 			player.score = player.score - 10;
 			player.isDead = false;
 		}
@@ -262,18 +344,18 @@ function run()
 		context.fillStyle = "black";
 		context.font = "100px Cooper Black";
 		var endText = "Game Over";
-		var endTextSize = 210;
-		context.fillText(endText, canvas.width / 2 - endTextSize, canvas.height / 2);
+		var center = context.measureText(endText);
+		context.fillText(endText, canvas.width / 2 - center.width / 2, canvas.height / 2);
 		
 		context.fillStyle = "black";
 		context.font = "50px Cooper Black";
 		var endText = "Respawn in - " + Math.floor(7 - deathTimer);
-		var endTextSize = 210;
-		context.fillText(endText, canvas.width / 2 - endTextSize, canvas.height / 2 + 100);
+		var center = context.measureText(endText);
+		context.fillText(endText, canvas.width / 2 - center.width / 2, canvas.height / 2 + 100);
 	}
 	
 	//draw the timer
-	context.fillStyle = "black";
+	context.fillStyle = "white";
 	context.font = "32px Cooper Black";
 	var timerText = "Time: " + Math.floor(player.time);
 	context.fillText(timerText, 10, 110);
