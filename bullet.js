@@ -1,7 +1,7 @@
 var Bullet = function(player)
 {
 	this.image = document.createElement("img");
-	this.image.src = "plasmabullet.png"
+	this.image.src = "bullet.png"
 	
 	this.xPos = player.position.xPos;
 	this.yPos = player.position.yPos;
@@ -23,7 +23,7 @@ Bullet.prototype.draw = function()
 	context.save();
 		context.translate(this.xPos, this.yPos);
 		context.rotate(this.rotation);
-		context.drawImage(this.image, -this.width/2, -this.height/2)
+		context.drawImage(this.image, -this.width/2, -this.height/2 + 15)
 	context.restore();
 }
 

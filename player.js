@@ -24,6 +24,9 @@ var Player = function()
 	this.sprite.buildAnimation(12, 8, 165, 126, 0.05, [28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40]);//shoot left
 	this.sprite.buildAnimation(12, 8, 165, 126, 0.05, [79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91]);//shoot right
 	
+	this.startPos = new Vector2();
+	this.startPos.set(canvas.width/2, canvas.height/2 - 500);
+	
 	this.position = new Vector2();
 	this.position.set(canvas.width/2, canvas.height/2 - 500);
 	
@@ -293,9 +296,9 @@ Player.prototype.update = function(deltaTime)
 	}
 }
 
-Player.prototype.draw = function()
+Player.prototype.draw = function(offSetX, offSetY)
 {
-	this.sprite.draw(context, this.position.xPos, this.position.yPos);
+	this.sprite.draw(context, this.position.xPos - offSetX, this.position.yPos - offSetY);
 	
 	for (var b = 0 ; b < this.bullets.length ; ++ b)
 	{

@@ -137,7 +137,7 @@ function cellAtPixelCoord(layer, x, y)
 	return cellAtTileCoord(layer, tx, ty);
 }
 
-function drawMap()
+function drawMap(offSetX, offSetY)
 {
 	//this loops over all the layers in our tilemap
 	for(var layerIdx = 0; layerIdx < LAYER_COUNT; layerIdx++)
@@ -157,8 +157,8 @@ function drawMap()
 				{
 					var sx = TILESET_PADDING + (tileIndex % TILESET_COUNT_X) * (TILESET_TILE + TILESET_SPACING);
 					var sy = TILESET_PADDING + (Math.floor(tileIndex / TILESET_COUNT_X)) * (TILESET_TILE + TILESET_SPACING);
-					var dx = x * TILE;
-					var dy = (y - 1) * TILE;
+					var dx = x * TILE - offSetX;
+					var dy = (y - 1) * TILE - offSetY;
 					
 					// the tiles in the Tiled map are base 1 (meaning a value of 0 means no tile), so subtract one from the tileset id to get the correct tile
 					
@@ -179,8 +179,27 @@ function run()
 		deltaTime = 0.03;
 	}
 	
+	var xScroll = 0;
+	var yScroll = 0;
 	
-	drawMap();
+	if(xScroll < 0)
+	{
+		xScroll = 0;
+	}
+	if(xScroll > MAP.tw * TILE - canvas.width)
+	{
+		xScroll = MAP.tw * TILE - cnavas.width;
+	}
+	if(yScroll < 0)
+	{
+		yScroll = 0;
+	}
+	if(yScroll > MAP.th * TILE - canvas.height)
+	{
+		yScroll = MAP.th * TILE - cnavas.height;
+	}
+	
+	drawMap(xScroll, yScroll);
 	context.fillStyle = "#000000";		
 	
 	//door detection
@@ -201,7 +220,7 @@ function run()
 
 	player.update(deltaTime);
 	
-	player.draw(player, this.x, this.y);
+	player.draw(xScroll, yScroll);
 	
 	//enemy.update(deltaTime);
 	//enemy.draw(enemy, canvas.width/2, canvas.height/2);
