@@ -47,6 +47,8 @@ var fps = 0;
 var fpsCount = 0;
 var fpsTime = 0;
 
+var deathTimer = 0;
+
 var LAYER_COUNT = 4;
 var MAP = {tw: 100, th: 50};
 var TILE = 35;
@@ -177,6 +179,7 @@ function run()
 		deltaTime = 0.03;
 	}
 	
+	
 	drawMap();
 	context.fillStyle = "#000000";		
 	
@@ -184,15 +187,20 @@ function run()
 	if((player.position.xPos >= canvas.width / 2 + 615 && player.position.xPos <= canvas.width / 2 + 715 + 70) && (player.position.yPos >= 28 && player.position.yPos <= 28 + 110))
 	{
 		context.strokeRect(canvas.width / 2 + 615, 28, 70, 110);
+		
+		player.win = true;
+		
 		//draw the win game text
 		context.fillStyle = "black";
-		context.font = "100px Calabri";
+		context.font = "100px Cooper Black";
 		var winText = "You Win!";
 		var winTextSize = 160;
 		context.fillText(winText, canvas.width / 2 - winTextSize, canvas.height / 2);
 	}
 	
+
 	player.update(deltaTime);
+	
 	player.draw(player, this.x, this.y);
 	
 	//enemy.update(deltaTime);
@@ -212,31 +220,42 @@ function run()
 		context.strokeRect(0, 0, 180, 120);
 	context.return();*/
 	
-	if(player.lives < 0)
+
+	if(player.lives <= 0)
 	{
 		player.isDead = true;
-		player.lives = 5;
+		deathTimer += deltaTime;
 		
-		if(player.isDead)
+		if (deathTimer > 6 )
 		{
+			deathTimer = 0;
+			player.lives = 5;
 			player.position.set(canvas.width/2, canvas.height/2-500);
 			player.score = player.score - 10;
 			player.isDead = false;
 		}
+		
 	}
-	else if (player.lives <= 0)
+	
+	if (player.lives <= 0)
 	{
 		//draw the end game text
 		context.fillStyle = "black";
-		context.font = "100px Calabri";
+		context.font = "100px Cooper Black";
 		var endText = "Game Over";
-		var endTextSize = 150;
+		var endTextSize = 210;
 		context.fillText(endText, canvas.width / 2 - endTextSize, canvas.height / 2);
+		
+		context.fillStyle = "black";
+		context.font = "50px Cooper Black";
+		var endText = "Respawn in - " + Math.floor(7 - deathTimer);
+		var endTextSize = 210;
+		context.fillText(endText, canvas.width / 2 - endTextSize, canvas.height / 2 + 100);
 	}
 	
 	//draw the timer
 	context.fillStyle = "black";
-	context.font = "32px Calabri";
+	context.font = "32px Cooper Black";
 	var timerText = "Time: " + Math.floor(player.time);
 	context.fillText(timerText, 10, 110);
 	
@@ -245,7 +264,7 @@ function run()
 	{
 		var heart = document.createElement("img");
 		heart.src = "Heart.png";
-		context.drawImage(heart, 10 + ((heart.width + 30) * i), 120, 60, 60);
+		context.drawImage(heart, 10 + ((heart.width + 20) * i), 120, 50, 50);
 	}
 }
 

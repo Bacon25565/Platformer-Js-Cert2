@@ -1,30 +1,25 @@
-var Bullet = function()
+var Bullet = function(player)
 {
 	this.image = document.createElement("img");
 	this.image.src = "plasmabullet.png"
 	
-	this.xPos = 0;
-	this.yPos = 0;
-	this.rotation = 0;
+	this.xPos = player.position.xPos;
+	this.yPos = player.position.yPos;
 	
 	this.width = 65;
 	this.height = 8;
 	
-	this.velocityX = 0;
-	this.velocityY = 0;
-	this.speed = 5;
+	if ( player.direction == RIGHT )
+		this.speed = 25;
+	else
+		this.speed = -25;
 	
-	this.isDead = true;
+	
+	this.isDead = false;
 }
 
 Bullet.prototype.draw = function()
 {
-	bullet.rotation = player.rotation + Math.PI / 2;
-	
-	this.xPos = playerX;
-	this.yPos = playerY;
-	this.rotation = playerRot;
-	
 	context.save();
 		context.translate(this.xPos, this.yPos);
 		context.rotate(this.rotation);
@@ -35,4 +30,9 @@ Bullet.prototype.draw = function()
 Bullet.prototype.update = function(deltaTime)
 {
 	this.xPos += this.speed;
+	
+	if (this.xPos < 0 || this.xPos > canvas.width )
+	{
+		this.isDead = true;
+	}
 }

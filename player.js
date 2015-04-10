@@ -11,8 +11,6 @@ var ANIM_SHOOT_LEFT = 7;
 var ANIM_SHOOT_RIGHT = 8;
 var ANIM_MAX = 9;
 
-var bullet = new Bullet();
-
 var Player = function() 
 {
 	this.sprite = new Sprite("ChuckNorris.png");
@@ -54,220 +52,243 @@ var Player = function()
 	this.score = 0;
 	this.lives = 5;
 	this.time = 0;
+	this.win = false;
+	
+	this.bulletTimer = 0;
+	
+	this.bullets = [];
+	
 };
 
 Player.prototype.update = function(deltaTime)
 {
-	this.sprite.update(deltaTime);
-	
-	this.time += deltaTime;
-	
-	var acceleration = new Vector2();
-	var playerAccel = 5000;
-	var playerDrag = 8;
-	var playerGravity = TILE * 9.8 * 6;
-	var jumpForce = 65000;
-	
-	acceleration.yPos = playerGravity;
-	
-	var currFrame = this.sprite.currentFrame;
-	
-	if(keyboard.isKeyDown(keyboard.KEY_K) == true)
+	if(!(this.isDead || this.win))
 	{
-		player.lives = player.lives - 1;
-	}
-	
-	if(keyboard.isKeyDown(keyboard.KEY_A) == true )
-	{
-		acceleration.xPos -= playerAccel;
-		left = true;
-		this.direction = LEFT;
-		if(this.sprite.currentAnimation != ANIM_WALK_LEFT && this.jumping == false && this.falling == false)
-		{
-			this.sprite.setAnimation(ANIM_WALK_LEFT);
-		}
-	}
-	else if(keyboard.isKeyDown(keyboard.KEY_SPACE) == true)
-	{
-		bullet.update(deltaTime);
-		bullet.draw(bullet, player.xPos, player.yPos);
+		this.sprite.update(deltaTime);
 		
-		if(this.direction == LEFT)
-		{  
-			if(this.sprite.currentAnimation != ANIM_SHOOT_LEFT)
+		this.time += deltaTime;
+		this.bulletTimer -= deltaTime;
+		
+		var acceleration = new Vector2();
+		var playerAccel = 5000;
+		var playerDrag = 8;
+		var playerGravity = TILE * 9.8 * 6;
+		var jumpForce = 65000;
+		
+		acceleration.yPos = playerGravity;
+		
+		var currFrame = this.sprite.currentFrame;
+		
+		if(keyboard.isKeyDown(keyboard.KEY_K) == true)
+		{
+			player.lives = player.lives - 1;
+		}
+		
+		if(keyboard.isKeyDown(keyboard.KEY_A) == true )
+		{
+			acceleration.xPos -= playerAccel;
+			left = true;
+			this.direction = LEFT;
+			if(this.sprite.currentAnimation != ANIM_WALK_LEFT && this.jumping == false && this.falling == false)
 			{
-				this.sprite.setAnimation(ANIM_SHOOT_LEFT);
-			}	
-		} 
+				this.sprite.setAnimation(ANIM_WALK_LEFT);
+			}
+		}
+		else if(keyboard.isKeyDown(keyboard.KEY_SPACE) == true)
+		{
+			if ( this.bulletTimer < 0 )
+			{
+				this.bullets.push(new Bullet(this));
+				this.bulletTimer = 0.05;
+			}
+			if(this.direction == LEFT)
+			{  
+				if(this.sprite.currentAnimation != ANIM_SHOOT_LEFT)
+				{
+					this.sprite.setAnimation(ANIM_SHOOT_LEFT);
+				}	
+			} 
+			else
+			{
+				if(this.sprite.currentAnimation != ANIM_SHOOT_RIGHT)
+				{
+					this.sprite.setAnimation(ANIM_SHOOT_RIGHT);
+				}	
+			}
+		}
+		else if(keyboard.isKeyDown(keyboard.KEY_D) == true)
+		{
+			acceleration.xPos += playerAccel;
+			right = true;
+			this.direction = RIGHT;
+			if(this.sprite.currentAnimation != ANIM_WALK_RIGHT && this.jumping == false && this.falling == false)
+			{
+				this.sprite.setAnimation(ANIM_WALK_RIGHT);
+			}
+		}
 		else
 		{
-			if(this.sprite.currentAnimation != ANIM_SHOOT_RIGHT)
+			if(this.jumping == false && this.falling == false)
 			{
-				this.sprite.setAnimation(ANIM_SHOOT_RIGHT);
-			}	
+				if(this.direction == LEFT)
+				{
+					if(this.sprite.currentAnimation != ANIM_IDLE_LEFT)
+					this.sprite.setAnimation(ANIM_IDLE_LEFT);
+				}
+				else
+				{
+					if(this.sprite.currentAnimation != ANIM_IDLE_RIGHT)
+					this.sprite.setAnimation(ANIM_IDLE_RIGHT);
+				}
+			}
 		}
-	}
-	else if(keyboard.isKeyDown(keyboard.KEY_D) == true)
-	{
-		acceleration.xPos += playerAccel;
-		right = true;
-		this.direction = RIGHT;
-		if(this.sprite.currentAnimation != ANIM_WALK_RIGHT && this.jumping == false && this.falling == false)
-		{
-			this.sprite.setAnimation(ANIM_WALK_RIGHT);
-		}
-	}
-	else
-	{
-		if(this.jumping == false && this.falling == false)
+		
+		if(this.jumping || this.falling )
 		{
 			if(this.direction == LEFT)
 			{
-				if(this.sprite.currentAnimation != ANIM_IDLE_LEFT)
-				this.sprite.setAnimation(ANIM_IDLE_LEFT);
+				if(this.sprite.currentAnimation != ANIM_JUMP_LEFT)
+				this.sprite.setAnimation(ANIM_JUMP_LEFT);
 			}
 			else
 			{
-				if(this.sprite.currentAnimation != ANIM_IDLE_RIGHT)
-				this.sprite.setAnimation(ANIM_IDLE_RIGHT);
+				if(this.sprite.currentAnimation != ANIM_JUMP_RIGHT)
+				this.sprite.setAnimation(ANIM_JUMP_RIGHT);
+			}
+		}
+		
+		if ( this.velocity.y > 0 )
+		{
+			this.falling = true;
+		}
+		else
+		{
+			this.falling = false;
+		}
+		
+		if ( keyboard.isKeyDown(keyboard.KEY_W) && !this.jumping && !this.falling )
+		{
+			acceleration.yPos -= jumpForce;
+			this.jumping = true;
+			if(this.direction == LEFT)
+			{
+				this.sprite.setAnimation(ANIM_JUMP_LEFT)
+			}
+			else
+			{
+				this.sprite.setAnimation(ANIM_JUMP_RIGHT)
+			}
+		}
+		
+		var dragVector = this.velocity.multiplyScalar(playerDrag);
+		dragVector.yPos = 0;
+		acceleration = acceleration.subtract(dragVector.xPos, dragVector.yPos);
+
+		var v_delta = acceleration.multiplyScalar(deltaTime);
+		this.velocity = this.velocity.add(v_delta.xPos, v_delta.yPos);
+		
+		var collOffset = new Vector2();
+		collOffset.set(-TILE/2, 40);//this.height/2 - TILE);
+		
+		var collPos = this.position.add(collOffset.xPos, collOffset.yPos);
+			
+		var tx = pixelToTile(collPos.xPos);
+		var ty = pixelToTile(collPos.yPos);
+		var nx = collPos.xPos % TILE;
+		var ny = collPos.yPos % TILE;
+		
+		
+		if ( cellAtTileCoord(LAYER_LADDERS, tx, ty) ||
+			(cellAtTileCoord(LAYER_LADDERS, tx+1, ty) && nx) ||
+			(cellAtTileCoord(LAYER_LADDERS, tx, ty+1) && ny))
+		{
+			if(this.sprite.currentAnimation != ANIM_CLIMB)
+			{
+				this.sprite.setAnimation(ANIM_CLIMB);
+				this.sprite.currentFrame = currFrame;
+			}		
+			if(keyboard.isKeyDown(keyboard.KEY_W))
+			{
+				this.velocity.yPos = -600;
+			}
+			else if(keyboard.isKeyDown(keyboard.KEY_S))
+			{
+				this.velocity.yPos = 600;
+			}
+			else
+			{
+				this.velocity.yPos = 0;
+			}
+		}
+		
+		
+		
+		var p_delta = this.velocity.multiplyScalar(deltaTime);
+		this.position = this.position.add(p_delta.xPos, p_delta.yPos);
+		
+		collPos = this.position.add(collOffset.xPos, collOffset.yPos);
+		tx = pixelToTile(collPos.xPos);
+		ty = pixelToTile(collPos.yPos);
+		nx = collPos.xPos % TILE;
+		ny = collPos.yPos % TILE;
+		
+		var cell = cellAtTileCoord(LAYER_PLATFORMS, tx, ty);
+		var cell_right = cellAtTileCoord(LAYER_PLATFORMS, tx + 1, ty);
+		var cell_down = cellAtTileCoord(LAYER_PLATFORMS, tx, ty + 1);
+		var cell_diag = cellAtTileCoord(LAYER_PLATFORMS, tx + 1, ty + 1);
+		
+		//actual collision
+		if(this.velocity.yPos > 0)//moving down
+		{
+			if( (cell_down && !cell) || (cell_diag && !cell_right && nx))
+			{
+				this.position.yPos = tileToPixel(ty) - collOffset.yPos;
+				this.velocity.yPos = 0;
+				this.jumping = false;
+				ny = 0;
+			}
+		}
+		else if(this.velocity.yPos < 0)//moving up
+		{
+			if((cell && !cell_down) || (cell_right && !cell_diag && nx))
+			{
+				this.position.yPos = tileToPixel(ty + 1) - collOffset.yPos;
+				this.velocity.yPos = 0;
+				
+				cell = cell_down;
+				cell_right = cell_diag;
+				cell_down = cellAtTileCoord(LAYER_PLATFORMS, tx, ty + 2);
+				cell_diag = cellAtTileCoord(LAYER_PLATFORMS, tx + 1, ty + 2);
+				
+				ny = 0;
+			}
+		}
+		if(this.velocity.xPos > 0)//if we are moving right
+		{
+			if((cell_right && !cell) || (cell_diag && !cell_down && ny))
+			{
+				this.position.xPos = tileToPixel(tx) - collOffset.xPos;
+				this.velocity.xPos = 0;
+			}
+		}
+		else if(this.velocity.xPos <0)//if we are moving left
+		{
+			if((cell && !cell_right) || (cell_down && !cell_diag && ny))
+			{
+				this.position.xPos = tileToPixel(tx + 1) - collOffset.xPos;
+				this.velocity.xPos = 0;
 			}
 		}
 	}
 	
-	if(this.jumping || this.falling )
+	
+	for (var b = 0 ; b < this.bullets.length ; ++ b)
 	{
-		if(this.direction == LEFT)
+		this.bullets[b].update(deltaTime);
+		if (this.bullets[b].isDead)
 		{
-			if(this.sprite.currentAnimation != ANIM_JUMP_LEFT)
-			this.sprite.setAnimation(ANIM_JUMP_LEFT);
-		}
-		else
-		{
-			if(this.sprite.currentAnimation != ANIM_JUMP_RIGHT)
-			this.sprite.setAnimation(ANIM_JUMP_RIGHT);
-		}
-	}
-	
-	if ( this.velocity.y > 0 )
-	{
-		this.falling = true;
-	}
-	else
-	{
-		this.falling = false;
-	}
-	
-	if ( keyboard.isKeyDown(keyboard.KEY_W) && !this.jumping && !this.falling )
-	{
-		acceleration.yPos -= jumpForce;
-		this.jumping = true;
-		if(this.direction == LEFT)
-		{
-			this.sprite.setAnimation(ANIM_JUMP_LEFT)
-		}
-		else
-		{
-			this.sprite.setAnimation(ANIM_JUMP_RIGHT)
-		}
-	}
-	
-	var dragVector = this.velocity.multiplyScalar(playerDrag);
-	dragVector.yPos = 0;
-	acceleration = acceleration.subtract(dragVector.xPos, dragVector.yPos);
-
-	var v_delta = acceleration.multiplyScalar(deltaTime);
-	this.velocity = this.velocity.add(v_delta.xPos, v_delta.yPos);
-	
-	var collOffset = new Vector2();
-	collOffset.set(-TILE/2, 40);//this.height/2 - TILE);
-	
-	var collPos = this.position.add(collOffset.xPos, collOffset.yPos);
-		
-	var tx = pixelToTile(collPos.xPos);
-	var ty = pixelToTile(collPos.yPos);
-	var nx = collPos.xPos % TILE;
-	var ny = collPos.yPos % TILE;
-	
-	
-	if ( cellAtTileCoord(LAYER_LADDERS, tx, ty) ||
-		(cellAtTileCoord(LAYER_LADDERS, tx+1, ty) && nx) ||
-		(cellAtTileCoord(LAYER_LADDERS, tx, ty+1) && ny))
-	{
-		if(this.sprite.currentAnimation != ANIM_CLIMB)
-		{
-			this.sprite.setAnimation(ANIM_CLIMB);
-			this.sprite.currentFrame = currFrame;
-		}		
-		if(keyboard.isKeyDown(keyboard.KEY_W))
-		{
-			this.velocity.yPos = -600;
-		}
-		else if(keyboard.isKeyDown(keyboard.KEY_S))
-		{
-			this.velocity.yPos = 600;
-		}
-		else
-		{
-			this.velocity.yPos = 0;
-		}
-	}
-	
-	
-	
-	var p_delta = this.velocity.multiplyScalar(deltaTime);
-	this.position = this.position.add(p_delta.xPos, p_delta.yPos);
-	
-	collPos = this.position.add(collOffset.xPos, collOffset.yPos);
-	tx = pixelToTile(collPos.xPos);
-	ty = pixelToTile(collPos.yPos);
-	nx = collPos.xPos % TILE;
-	ny = collPos.yPos % TILE;
-	
-	var cell = cellAtTileCoord(LAYER_PLATFORMS, tx, ty);
-	var cell_right = cellAtTileCoord(LAYER_PLATFORMS, tx + 1, ty);
-	var cell_down = cellAtTileCoord(LAYER_PLATFORMS, tx, ty + 1);
-	var cell_diag = cellAtTileCoord(LAYER_PLATFORMS, tx + 1, ty + 1);
-	
-	//actual collision
-	if(this.velocity.yPos > 0)//moving down
-	{
-		if( (cell_down && !cell) || (cell_diag && !cell_right && nx))
-		{
-			this.position.yPos = tileToPixel(ty) - collOffset.yPos;
-			this.velocity.yPos = 0;
-			this.jumping = false;
-			ny = 0;
-		}
-	}
-	else if(this.velocity.yPos < 0)//moving up
-	{
-		if((cell && !cell_down) || (cell_right && !cell_diag && nx))
-		{
-			this.position.yPos = tileToPixel(ty + 1) - collOffset.yPos;
-			this.velocity.yPos = 0;
-			
-			cell = cell_down;
-			cell_right = cell_diag;
-			cell_down = cellAtTileCoord(LAYER_PLATFORMS, tx, ty + 2);
-			cell_diag = cellAtTileCoord(LAYER_PLATFORMS, tx + 1, ty + 2);
-			
-			ny = 0;
-		}
-	}
-	if(this.velocity.xPos > 0)//if we are moving right
-	{
-		if((cell_right && !cell) || (cell_diag && !cell_down && ny))
-		{
-			this.position.xPos = tileToPixel(tx) - collOffset.xPos;
-			this.velocity.xPos = 0;
-		}
-	}
-	else if(this.velocity.xPos <0)//if we are moving left
-	{
-		if((cell && !cell_right) || (cell_down && !cell_diag && ny))
-		{
-			this.position.xPos = tileToPixel(tx + 1) - collOffset.xPos;
-			this.velocity.xPos = 0;
+			this.bullets[b] = this.bullets[this.bullets.length-1];
+			this.bullets.length -= 1;
 		}
 	}
 }
@@ -276,14 +297,19 @@ Player.prototype.draw = function()
 {
 	this.sprite.draw(context, this.position.xPos, this.position.yPos);
 	
+	for (var b = 0 ; b < this.bullets.length ; ++ b)
+	{
+		this.bullets[b].draw();
+	}
+	
 	//draw the FPS
 	context.fillStyle = "#000000";
-	context.font="32px Calabri";
+	context.font="32px Cooper Black";
 	context.fillText("FPS: " + fps, 10, 35);
 	
 	//draw the score
 	context.fillStyle = "black";
-	context.font = "32px Calabri";
+	context.font = "32px Cooper Black";
 	var scoreText = "Score: " + player.score;
 	context.fillText(scoreText, 10, 70);
 }
