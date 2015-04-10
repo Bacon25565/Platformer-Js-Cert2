@@ -208,7 +208,10 @@ Player.prototype.update = function(deltaTime)
 			if(this.sprite.currentAnimation != ANIM_CLIMB)
 			{
 				this.sprite.setAnimation(ANIM_CLIMB);
-				this.sprite.currentFrame = currFrame;
+				if (this.sprite.animations[this.sprite.currentAnimation].length > currFrame)
+					this.sprite.currentFrame = currFrame;
+				else
+					this.sprite.currentFrame = 0;
 			}		
 			if(keyboard.isKeyDown(keyboard.KEY_W))
 			{
@@ -302,7 +305,7 @@ Player.prototype.draw = function(offSetX, offSetY)
 	
 	for (var b = 0 ; b < this.bullets.length ; ++ b)
 	{
-		this.bullets[b].draw();
+		this.bullets[b].draw(offSetX, offSetY);
 	}
 	
 	//draw the FPS

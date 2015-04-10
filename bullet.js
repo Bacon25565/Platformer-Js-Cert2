@@ -20,18 +20,15 @@ var Bullet = function(player)
 
 Bullet.prototype.draw = function(offSetX, offSetY)
 {
-	context.save();
-		context.translate(this.xPos, this.yPos);
-		context.rotate(this.rotation);
-		context.drawImage(this.image, player.position.xPos - offSetX, player.position.yPos - offSetY)
-	context.restore();
+	context.drawImage(this.image, this.xPos - offSetX, this.yPos-offSetY);
+
 }
 
 Bullet.prototype.update = function(deltaTime)
 {
 	this.xPos += this.speed;
 	
-	if (this.xPos < 0 || this.xPos > canvas.width )
+	if (this.xPos < 0 || this.xPos > MAP.tw * TILE )
 	{
 		this.isDead = true;
 	}

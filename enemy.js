@@ -9,6 +9,7 @@ var Enemy = function()
 	this.position = new Vector2();
 	this.velocity = new Vector2();
 	
+	
 	this.direction = RIGHT;
 };
 
@@ -29,8 +30,12 @@ Enemy.prototype.update = function(deltaTime)
 	
 	var dragX = this.velocity.xPos * enemyDrag;
 	acceleration.xPos -= dragX;
-	this.velocity = this.velocity.add(acceleration.multiplyScalar(deltaTime));
-	this.velocity = this.position.add(this.velocity.multiplyScalar(deltaTime));
+	
+	var v_delta = acceleration.multiplyScalar(deltaTime);
+	this.velocity = this.velocity.add(v_delta.xPos, v_delta.yPos);
+	
+	var p_delta = this.velocity.multiplyScalar(deltaTime);
+	this.position = this.position.add(p_delta.xPos, p_delta.yPos);
 }
 
 Enemy.prototype.draw = function(offSetX, offSetY)
