@@ -18,12 +18,12 @@ var Bullet = function(player)
 	this.isDead = false;
 }
 
-Bullet.prototype.draw = function()
+Bullet.prototype.draw = function(offSetX, offSetY)
 {
 	context.save();
 		context.translate(this.xPos, this.yPos);
 		context.rotate(this.rotation);
-		context.drawImage(this.image, -this.width/2, -this.height/2 + 15)
+		context.drawImage(this.image, player.position.xPos - offSetX, player.position.yPos - offSetY)
 	context.restore();
 }
 

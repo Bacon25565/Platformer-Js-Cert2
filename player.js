@@ -25,10 +25,10 @@ var Player = function()
 	this.sprite.buildAnimation(12, 8, 165, 126, 0.05, [79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91]);//shoot right
 	
 	this.startPos = new Vector2();
-	this.startPos.set(canvas.width/2, canvas.height/2 - 500);
+	this.startPos.set(15*TILE, 45 * TILE);
 	
 	this.position = new Vector2();
-	this.position.set(canvas.width/2, canvas.height/2 - 500);
+	this.position.set(this.startPos.xPos, this.startPos.yPos);
 	
 	this.width = 165;
 	this.height = 100;
@@ -306,12 +306,12 @@ Player.prototype.draw = function(offSetX, offSetY)
 	}
 	
 	//draw the FPS
-	context.fillStyle = "#000000";
+	context.fillStyle = "white";
 	context.font="32px Cooper Black";
 	context.fillText("FPS: " + fps, 10, 35);
 	
 	//draw the score
-	context.fillStyle = "black";
+	context.fillStyle = "white";
 	context.font = "32px Cooper Black";
 	var scoreText = "Score: " + player.score;
 	context.fillText(scoreText, 10, 70);
