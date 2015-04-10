@@ -5,6 +5,10 @@ var player = new Player();
 var keyboard = new Keyboard();
 var enemy = new Enemy();
 
+var playerX = player.xPos;
+var playerY = player.yPos;
+var playerRot = player.rotation;
+
 var startFrameMillis = Date.now();
 var endFrameMillis = Date.now();
 
@@ -177,9 +181,15 @@ function run()
 	context.fillStyle = "#000000";		
 	
 	//door detection
-	if((player.position.xPos >= canvas.width / 2 + 715 && player.position.xPos <= canvas.width / 2 + 715 + 70) && (player.position.yPos >= 28 && player.position.yPos <= 28 + 110))
+	if((player.position.xPos >= canvas.width / 2 + 615 && player.position.xPos <= canvas.width / 2 + 715 + 70) && (player.position.yPos >= 28 && player.position.yPos <= 28 + 110))
 	{
-		context.strokeRect(canvas.width / 2 + 715, 28, 70, 110);
+		context.strokeRect(canvas.width / 2 + 615, 28, 70, 110);
+		//draw the win game text
+		context.fillStyle = "black";
+		context.font = "100px Calabri";
+		var winText = "You Win!";
+		var winTextSize = 160;
+		context.fillText(winText, canvas.width / 2 - winTextSize, canvas.height / 2);
 	}
 	
 	player.update(deltaTime);
@@ -197,24 +207,45 @@ function run()
 		fps = fpsCount;
 		fpsCount = 0;
 	}		
-		
-	//draw the FPS
-	context.fillStyle = "#000000";
-	context.font="18px Calabri";
-	context.fillText("FPS: " + fps, 10, 22, 100);
 	
-	//draw the score
+	/*context.save();
+		context.strokeRect(0, 0, 180, 120);
+	context.return();*/
+	
+	if(player.lives < 0)
+	{
+		player.isDead = true;
+		player.lives = 5;
+		
+		if(player.isDead)
+		{
+			player.position.set(canvas.width/2, canvas.height/2-500);
+			player.score = player.score - 10;
+			player.isDead = false;
+		}
+	}
+	else if (player.lives <= 0)
+	{
+		//draw the end game text
+		context.fillStyle = "black";
+		context.font = "100px Calabri";
+		var endText = "Game Over";
+		var endTextSize = 150;
+		context.fillText(endText, canvas.width / 2 - endTextSize, canvas.height / 2);
+	}
+	
+	//draw the timer
 	context.fillStyle = "black";
-	context.font = "18px Calabri";
-	var scoreText = "Score: " + player.score;
-	context.fillText(scoreText, 10, 44, 100);
+	context.font = "32px Calabri";
+	var timerText = "Time: " + Math.floor(player.time);
+	context.fillText(timerText, 10, 110);
 	
 	//draw the lives
 	for(var i = 0; i < player.lives; i++)
 	{
 		var heart = document.createElement("img");
 		heart.src = "Heart.png";
-		context.drawImage(heart, 10 + ((heart.height + 2) * i), 50);
+		context.drawImage(heart, 10 + ((heart.width + 30) * i), 120, 60, 60);
 	}
 }
 

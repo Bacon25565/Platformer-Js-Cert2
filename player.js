@@ -11,6 +11,8 @@ var ANIM_SHOOT_LEFT = 7;
 var ANIM_SHOOT_RIGHT = 8;
 var ANIM_MAX = 9;
 
+var bullet = new Bullet();
+
 var Player = function() 
 {
 	this.sprite = new Sprite("ChuckNorris.png");
@@ -25,7 +27,7 @@ var Player = function()
 	this.sprite.buildAnimation(12, 8, 165, 126, 0.05, [79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91]);//shoot right
 	
 	this.position = new Vector2();
-	this.position.set(canvas.width/2, canvas.height/2);
+	this.position.set(canvas.width/2, canvas.height/2 - 500);
 	
 	this.width = 165;
 	this.height = 100;
@@ -42,19 +44,23 @@ var Player = function()
 	this.dirY = 0;
 	this.angularVelocity = 0;
 	
-	this.rotation = 0;
+	this.rotation = Math.PI;
 	this.direction = LEFT;
 	
 	this.jumping = false;
 	this.falling = false;
+	this.isDead = false;
 	
 	this.score = 0;
 	this.lives = 5;
+	this.time = 0;
 };
 
 Player.prototype.update = function(deltaTime)
 {
 	this.sprite.update(deltaTime);
+	
+	this.time += deltaTime;
 	
 	var acceleration = new Vector2();
 	var playerAccel = 5000;
@@ -65,6 +71,11 @@ Player.prototype.update = function(deltaTime)
 	acceleration.yPos = playerGravity;
 	
 	var currFrame = this.sprite.currentFrame;
+	
+	if(keyboard.isKeyDown(keyboard.KEY_K) == true)
+	{
+		player.lives = player.lives - 1;
+	}
 	
 	if(keyboard.isKeyDown(keyboard.KEY_A) == true )
 	{
@@ -78,6 +89,9 @@ Player.prototype.update = function(deltaTime)
 	}
 	else if(keyboard.isKeyDown(keyboard.KEY_SPACE) == true)
 	{
+		bullet.update(deltaTime);
+		bullet.draw(bullet, player.xPos, player.yPos);
+		
 		if(this.direction == LEFT)
 		{  
 			if(this.sprite.currentAnimation != ANIM_SHOOT_LEFT)
@@ -261,4 +275,15 @@ Player.prototype.update = function(deltaTime)
 Player.prototype.draw = function()
 {
 	this.sprite.draw(context, this.position.xPos, this.position.yPos);
+	
+	//draw the FPS
+	context.fillStyle = "#000000";
+	context.font="32px Calabri";
+	context.fillText("FPS: " + fps, 10, 35);
+	
+	//draw the score
+	context.fillStyle = "black";
+	context.font = "32px Calabri";
+	var scoreText = "Score: " + player.score;
+	context.fillText(scoreText, 10, 70);
 }
