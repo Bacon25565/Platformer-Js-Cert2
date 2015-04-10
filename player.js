@@ -191,10 +191,9 @@ Player.prototype.update = function(deltaTime)
 		this.velocity = this.velocity.add(v_delta.xPos, v_delta.yPos);
 		
 		var collOffset = new Vector2();
-		collOffset.set(-TILE/2, 40);//this.height/2 - TILE);
+		collOffset.set(-TILE/2, 40);
 		
 		var collPos = this.position.add(collOffset.xPos, collOffset.yPos);
-			
 		var tx = pixelToTile(collPos.xPos);
 		var ty = pixelToTile(collPos.yPos);
 		var nx = collPos.xPos % TILE;

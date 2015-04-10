@@ -187,6 +187,7 @@ bgMusic.play();
 	
 var stateSplash = 0;
 var stateGame = 1;
+var stateControls = 2;
 var gameState = stateSplash;
 
 function run()
@@ -200,6 +201,10 @@ function run()
 		
 		case stateGame:
 		gameStateUpdate(deltaTime);
+		break;
+		
+		case stateControls:
+		controlsStateUpdate(deltaTime);
 		break;
 	}
 }
@@ -215,6 +220,11 @@ function splashStateUpdate(deltaTime)
 		gameState = stateGame;
 	}
 	
+	if(keyboard.isKeyDown(keyboard.KEY_I) == true)
+	{
+		gameState = stateControls;
+	}
+	
 	//draw the win game text
 	context.fillStyle = "white";
 	context.font = "100px Cooper Black";
@@ -227,6 +237,56 @@ function splashStateUpdate(deltaTime)
 	var startText = "Press 'Space' To Play";
 	var center = context.measureText(startText);
 	context.fillText(startText, canvas.width / 2 - center.width / 2, canvas.height / 2 + 100);
+	
+	context.fillStyle = "white";
+	context.font = "50px Cooper Black";
+	var contText = "Press 'I' For Controls";
+	var center = context.measureText(contText);
+	context.fillText(contText, canvas.width / 2 - center.width / 2, canvas.height / 2 + 500);
+}
+
+function controlsStateUpdate(deltaTime)
+{
+	//resets background image by clearing previous one
+	canvas.width = canvas.width;
+	context.drawImage(background, 0 ,0);
+	
+	//draw the control text
+	context.fillStyle = "#DC143C";
+	context.font = "100px Cooper Black";
+	var startText = "Controls";
+	var center = context.measureText(startText);
+	context.fillText(startText, canvas.width / 2 - center.width / 2, 100);
+	
+	context.fillStyle = "#DC143C";
+	context.font = "50px Cooper Black";
+	var contText = "W = Jump";
+	var center = context.measureText(contText);
+	context.fillText(contText, canvas.width / 2 - center.width / 2, 200);
+	
+	context.fillStyle = "#DC143C";
+	context.font = "50px Cooper Black";
+	var contText = "A = Left";
+	var center = context.measureText(contText);
+	context.fillText(contText, canvas.width / 2 - center.width / 2, 300);
+	
+	context.fillStyle = "#DC143C";
+	context.font = "50px Cooper Black";
+	var contText = "D = Right";
+	var center = context.measureText(contText);
+	context.fillText(contText, canvas.width / 2 - center.width / 2, 400);
+	
+	context.fillStyle = "#DC143C";
+	context.font = "50px Cooper Black";
+	var contText = "K = Suicide";
+	var center = context.measureText(contText);
+	context.fillText(contText, canvas.width / 2 - center.width / 2, 500);
+	
+	context.fillStyle = "#DC143C";
+	context.font = "50px Cooper Black";
+	var contText = "'Space' = Shoot";
+	var center = context.measureText(contText);
+	context.fillText(contText, canvas.width / 2 - center.width / 2, 600);
 }
 
 function gameStateUpdate(deltaTime)
