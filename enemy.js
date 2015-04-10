@@ -83,5 +83,5 @@ Enemy.prototype.update = function(deltaTime)
 
 Enemy.prototype.draw = function(offSetX, offSetY)
 {
-		context.drawImage(this.image, this.position.xPos - offSetX, this.position.yPos - offSetY, this.width, this.height)
+		context.drawImage(this.image, 1000 - offSetX, 1625 - offSetY, this.width, this.height)
 }

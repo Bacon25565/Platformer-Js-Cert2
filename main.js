@@ -287,6 +287,22 @@ function controlsStateUpdate(deltaTime)
 	var contText = "'Space' = Shoot";
 	var center = context.measureText(contText);
 	context.fillText(contText, canvas.width / 2 - center.width / 2, 600);
+	
+	context.fillStyle = "#DC143C";
+	context.font = "50px Cooper Black";
+	var contText = "Press 'I' To Go Back Or Press 'Space' To Play";
+	var center = context.measureText(contText);
+	context.fillText(contText, canvas.width / 2 - center.width / 2, canvas.height / 2 + 500);
+	
+	if(keyboard.isKeyDown(keyboard.KEY_I) == true)
+	{
+		gameState = stateSplash;
+	}
+	
+	if(keyboard.isKeyDown(keyboard.KEY_SPACE) == true)
+	{
+		gameState = stateGame;
+	}
 }
 
 function gameStateUpdate(deltaTime)
